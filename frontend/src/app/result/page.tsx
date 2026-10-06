@@ -3,12 +3,18 @@ import Link from "next/link";
 import { CarbonResult } from "@/components/carbon/CarbonResult";
 import { loadSession } from "@/lib/utils";
 import type { CarbonResultData } from "@/types/carbon";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ResultPage() {
-  const [data] = useState<CarbonResultData | null>(() =>
-    loadSession<CarbonResultData>("carbon:result")
-  );
+  const [data, setData] = useState<CarbonResultData | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setData(loadSession<CarbonResultData>("carbon:result"));
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   if (!data)
     return (
