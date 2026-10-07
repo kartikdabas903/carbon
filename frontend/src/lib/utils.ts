@@ -3,16 +3,17 @@ export function cn(...c: (string | false | null | undefined)[]) {
 }
 
 export const fmtKg = (n: number) =>
-  n >= 1000 ? `${(n / 1000).toFixed(2)} t` : `${n.toFixed(1)} kg`;
+  n >= 1000 ? `${(n / 1000).toFixed(2)} t` : n > 0 && n < 1 ? `${Math.round(n * 1000)} g` : `${n.toFixed(1)} kg`;
 
-export const fmtPct = (n: number) => `${Math.round(n * 100)}%`;
+/** Rough money amount, e.g. "≈ ₹1,50,000"; empty when unknown. */
+export const fmtMoney = (amount: number | null | undefined, currency: string | null | undefined) => {
+  if (amount == null || !currency) return "";
+  try {
+    const locale = currency === "INR" ? "en-IN" : undefined;
+    return `≈ ${new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 0 }).format(amount)}`;
+  } catch {
+    return `≈ ${Math.round(amount).toLocaleString()} ${currency}`;
+  }
+};
 
-export function saveSession<T>(key: string, value: T) {
-  if (typeof window !== "undefined") sessionStorage.setItem(key, JSON.stringify(value));
-}
-
-export function loadSession<T>(key: string): T | null {
-  if (typeof window === "undefined") return null;
-  const raw = sessionStorage.getItem(key);
-  return raw ? (JSON.parse(raw) as T) : null;
-}
+export const fmtPct =(n: number) => `${Math.round(n * 100)}%`;

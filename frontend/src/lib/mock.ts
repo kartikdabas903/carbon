@@ -65,6 +65,6 @@ export const mockPredict = (req: AIRequest): AIPrediction => {
       { name: "Peak-time timing", impact: 0.12 },
       { name: "Shared usage", impact: -0.18 },
     ],
-    recommendations: mockRecommendations.filter((r) => r.category === category).concat(mockRecommendations).slice(0, 3),
+    recommendations: mockRecommendations.filter((r) => r.category === category).concat(mockRecommendations.filter((r) => r.category !== category)).slice(0, 3),
   };
 };

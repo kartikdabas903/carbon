@@ -1,26 +1,50 @@
 @import "tailwindcss";
 
+/* CarbonShift: a nature palette. Forest greens for structure, fresh leaf for
+   highlights, earthy clay for emissions, warm parchment instead of stark white. */
 :root {
   color-scheme: light;
-  --ink: #12261d;
-  --paper: #f3f5f0;
-  --line: #dfe5dc;
+  --ink: #14261c;
+  --paper: #f3efe4; /* page: warm parchment */
+  --surface: #fffdf7; /* cards */
+  --line: #e3ddcd;
+  --forest: #0f2a1f;
   --moss: #1f6b4a;
-  --clay: #c4622d;
-  --forest: #0e2a20;
-  --lime: #c6f06b;
+  --fern: #2f8f5b;
+  --sage: #e4ece0;
+  --mist: #dcebe5;
+  --sprout: #c8e88a; /* fresh-leaf highlight */
+  --lime: #c8e88a; /* kept for existing classes */
+  --clay: #c4622d; /* emissions / your plan */
+  --sun: #e8b84a;
+  /* Chart series: validated for colour-blind separation on light surfaces (dataviz validator) */
+  --chart-planned: #c4622d;
+  --chart-reduced: #0f8a6a;
+  --chart-single: #1f6b4a;
+  --chart-grid: #ebe6d9;
 }
 
 @theme inline {
   --color-ink: var(--ink);
   --color-paper: var(--paper);
+  --color-surface: var(--surface);
   --color-line: var(--line);
-  --color-moss: var(--moss);
-  --color-clay: var(--clay);
   --color-forest: var(--forest);
+  --color-moss: var(--moss);
+  --color-fern: var(--fern);
+  --color-sage: var(--sage);
+  --color-mist: var(--mist);
+  --color-sprout: var(--sprout);
   --color-lime: var(--lime);
+  --color-clay: var(--clay);
+  --color-sun: var(--sun);
+  --color-chart-planned: var(--chart-planned);
+  --color-chart-reduced: var(--chart-reduced);
+  --color-chart-single: var(--chart-single);
+  --color-chart-grid: var(--chart-grid);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-fraunces);
 }
 
 html,
@@ -28,4 +52,168 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* A faint paper grain so the background feels natural, not flat */
+body {
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(200, 232, 138, 0.18), transparent 42%),
+    radial-gradient(circle at 92% 0%, rgba(47, 143, 91, 0.08), transparent 38%);
+  background-attachment: fixed;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* Form fields share one calm style (components layer, so size utilities like w-20 still win) */
+@layer components {
+  .field {
+    width: 100%;
+    border-radius: 0.875rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    padding: 0.6rem 0.9rem;
+    color: var(--ink);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .field:hover {
+    border-color: #cfc7b2;
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--fern);
+    box-shadow: 0 0 0 4px rgba(47, 143, 91, 0.14);
+  }
+  .field::placeholder {
+    color: rgba(20, 38, 28, 0.42);
+  }
+}
+
+/* ---------- Motion ---------- */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(10px, -16px) rotate(14deg);
+  }
+}
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+@keyframes grow {
+  from {
+    transform: scaleY(0.2);
+    opacity: 0.4;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+@keyframes unfurl {
+  from {
+    transform: scale(0) rotate(-30deg);
+  }
+  to {
+    transform: scale(1) rotate(0);
+  }
+}
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
+.animate-rise {
+  animation: rise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.animate-drift {
+  animation: drift 9s ease-in-out infinite;
+}
+.animate-sway {
+  animation: sway 3.2s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+.animate-grow {
+  animation: grow 1.4s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+.animate-unfurl {
+  animation: unfurl 1.4s ease-in-out infinite alternate;
+}
+.shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent) var(--sage);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+/* Cards and children rise in one after another */
+.stagger > * {
+  animation: rise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.stagger > *:nth-child(2) { animation-delay: 0.05s; }
+.stagger > *:nth-child(3) { animation-delay: 0.1s; }
+.stagger > *:nth-child(4) { animation-delay: 0.15s; }
+.stagger > *:nth-child(5) { animation-delay: 0.2s; }
+.stagger > *:nth-child(6) { animation-delay: 0.25s; }
+.stagger > *:nth-child(n + 7) { animation-delay: 0.3s; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Leaflet sits on our surface colour */
+.leaflet-container {
+  background: var(--mist);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* The report prints without the app chrome */
+@page {
+  margin: 16mm;
+}
+
+@media print {
+  body {
+    background: white;
+  }
+  aside,
+  header[data-app-header],
+  nextjs-portal {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+  }
 }

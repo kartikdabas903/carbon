@@ -3,11 +3,11 @@ import { cn } from "@/lib/utils";
 import type { Activity, ActivityCategory } from "@/types/carbon";
 
 export const ACTIVITIES: Activity[] = [
-  { id: "transport", label: "Transport", unit: "km", hint: "Commutes, fleet trips, travel" },
-  { id: "building", label: "Building use", unit: "hours", hint: "Occupied hours, heating, cooling" },
-  { id: "electricity", label: "Electricity", unit: "kWh", hint: "Grid demand and peak load" },
-  { id: "equipment", label: "Equipment", unit: "hours", hint: "Machinery and device runtime" },
-  { id: "resources", label: "Resources", unit: "kg", hint: "Materials, water, consumables" },
+  { id: "transport", label: "Transport", unit: "km", hint: "Cars, public transport, flights, freight" },
+  { id: "building", label: "Building & fuels", unit: "kWh", hint: "Gas, LPG, oil, coal, refrigerants, hotels" },
+  { id: "electricity", label: "Electricity", unit: "kWh", hint: "Grid power, appliances, generators" },
+  { id: "equipment", label: "Equipment", unit: "device", hint: "New laptops, phones and other devices" },
+  { id: "resources", label: "Food, waste & materials", unit: "kg", hint: "Food, waste, water, paper, plastic, steel" },
 ];
 
 export function ActivitySelector({
@@ -27,8 +27,8 @@ export function ActivitySelector({
           aria-checked={value === a.id}
           onClick={() => onChange(a)}
           className={cn(
-            "rounded-md border p-3 text-left transition",
-            value === a.id ? "border-moss bg-moss/10" : "border-line hover:bg-line/40"
+            "rounded-2xl border p-3.5 text-left transition",
+            value === a.id ? "border-fern bg-sage/70 ring-1 ring-fern/30" : "border-line bg-surface hover:border-fern/40 hover:bg-sage/40"
           )}
         >
           <div className="font-medium">{a.label}</div>

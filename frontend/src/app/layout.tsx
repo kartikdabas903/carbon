@@ -1,23 +1,37 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { Sidebar } from "@/components/ui/Sidebar";
+import { AuthProvider } from "@/components/auth/AuthProvider";
+import { RequireAuth } from "@/components/auth/RequireAuth";
 
 export const metadata: Metadata = {
-  title: "CarbonFlow AI",
-  description: "Predict and prevent avoidable emissions before the activity happens.",
+  title: "CarbonShift · Predict and prevent emissions",
+  description:
+    "CarbonShift predicts the carbon footprint of a decision before you make it, and shows the lower-carbon choice.",
 };
+
+// globals.css reads these variables; without them the app falls back to a default font
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+// Organic serif for headings: soft, natural, editorial
+const fraunces = Fraunces({ variable: "--font-fraunces", subsets: ["latin"], axes: ["SOFT", "opsz"] });
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable}`}>
       <body>
-        <div className="min-h-screen md:flex">
-          <Sidebar />
-          <main className="min-w-0 flex-1 p-5 md:p-8">
-            <div className="mx-auto max-w-6xl">{children}</div>
-          </main>
-        </div>
+        <AuthProvider>
+          <RequireAuth>
+            <div className="min-h-screen md:flex">
+              <Sidebar />
+              <main className="min-w-0 flex-1 px-4 pb-16 pt-6 md:px-10 md:pt-10">
+                <div className="mx-auto max-w-6xl">{children}</div>
+              </main>
+            </div>
+          </RequireAuth>
+        </AuthProvider>
       </body>
     </html>
   );
