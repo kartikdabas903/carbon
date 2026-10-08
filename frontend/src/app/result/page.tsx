@@ -50,8 +50,6 @@ export default function ResultPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Track"
-        icon="history"
         title="History"
         description="Every prediction and calculation you've made, with its recommendations alongside."
         actions={history.length > 0 && (

@@ -38,10 +38,9 @@ export default function NetZeroPage() {
     let active = true;
     void getAccountGoal().then((goal) => {
       if (!active) return;
-      if (goal) {
-        setTargetPct(goal.reductionPct);
-        setTargetYear(goal.targetYear);
-      }
+      // Keep the defaults unless the saved goal has real numbers (a partial row would blank the pathway)
+      if (goal && Number.isFinite(goal.reductionPct)) setTargetPct(goal.reductionPct);
+      if (goal && Number.isFinite(goal.targetYear)) setTargetYear(goal.targetYear);
       setGoalModified(false);
       setGoalLoadedFor(user.id);
     }).catch((error: Error) => {
@@ -72,7 +71,7 @@ export default function NetZeroPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="Plan" icon="target" title="Net-zero plan" description="Every change from your decisions, priced per tonne of CO₂e avoided, and the cheapest path to your target." />
+      <PageHeader title="Net-zero plan" description="Every change from your decisions, priced per tonne of CO₂e avoided, and the cheapest path to your target." />
 
       {measures.priced.length + measures.unpriced.length === 0 ? (
         <Card>
@@ -186,7 +185,7 @@ export default function NetZeroPage() {
 
             <div className="mt-5 border-y border-line py-4">
               <h3 className="mb-2 text-sm font-semibold text-ink/80">Reduction over time</h3>
-              <PathwayChart pathway={plan.pathway} targetPct={targetPct} />
+              <PathwayChart pathway={plan.pathway} targetPct={targetPct} targetYear={targetYear} />
             </div>
 
             <ol className="mt-4 space-y-4">

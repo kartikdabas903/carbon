@@ -52,8 +52,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
                     onClick={onNavigate}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition",
-                      active ? "bg-sprout font-medium text-forest shadow-sm" : "text-white/75 hover:bg-white/10 hover:text-white"
+                      "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition",
+                      active ? "bg-sprout font-semibold text-forest shadow-sm" : "text-white/72 hover:bg-white/10 hover:text-white"
                     )}
                   >
                     <Icon name={n.icon} className={cn("h-[18px] w-[18px] transition", !active && "opacity-70 group-hover:opacity-100")} />
@@ -69,14 +69,15 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-/** Leafy line art for the sidebar's foot. */
+/** Compact motion graphic for the sidebar's foot. */
 function Foliage() {
   return (
-    <svg viewBox="0 0 240 120" className="pointer-events-none absolute inset-x-0 bottom-0 w-full opacity-[0.18]" aria-hidden>
-      <path d="M-10 120C40 70 90 60 130 75s80 15 120-20v65z" fill="#c8e88a" />
-      <path d="M30 120c4-30 18-52 40-66M70 54c-12 2-22-4-26-14 12-2 22 4 26 14zM56 80c-12 0-20-8-22-18 12 0 20 8 22 18z" stroke="#c8e88a" strokeWidth="2" fill="none" />
-      <path d="M190 120c-2-26 6-46 24-60M214 60c-10 4-20 0-26-8 10-4 20 0 26 8z" stroke="#c8e88a" strokeWidth="2" fill="none" />
-    </svg>
+    <div className="pointer-events-none absolute inset-x-5 bottom-5 h-24 rounded-2xl bg-[linear-gradient(135deg,rgba(185,230,109,0.2),rgba(91,145,165,0.1)),radial-gradient(circle_at_75%_22%,rgba(255,255,255,0.14),transparent_32%)] opacity-80" aria-hidden>
+      <div className="absolute bottom-4 left-5 h-12 w-3 rounded-full bg-sprout/50" />
+      <div className="absolute bottom-4 left-10 h-16 w-3 rounded-full bg-sky/40" />
+      <div className="absolute bottom-4 left-16 h-9 w-3 rounded-full bg-clay/50" />
+      <div className="absolute right-5 top-4 h-10 w-10 rounded-2xl border border-white/15" />
+    </div>
   );
 }
 
@@ -95,7 +96,7 @@ export function Sidebar() {
 
   return (
     <>
-      <aside className="relative hidden h-screen w-64 shrink-0 flex-col overflow-hidden bg-forest md:sticky md:top-0 md:flex">
+      <aside className="relative hidden h-screen w-64 shrink-0 flex-col overflow-hidden bg-forest shadow-[18px_0_48px_-42px_rgba(16,38,31,0.8)] lg:sticky lg:top-0 lg:flex 2xl:w-72">
         <Link href="/" className="px-6 pb-6 pt-6" aria-label="CarbonShift home">
           <Logo />
         </Link>
@@ -106,7 +107,7 @@ export function Sidebar() {
           <AccountControls />
         </div>
         <div className="relative px-5 pb-6">
-          <div className="relative z-10 rounded-2xl border border-white/10 bg-white/5 p-4 text-xs leading-relaxed text-white/70 backdrop-blur">
+          <div className="relative z-10 rounded-2xl border border-white/10 bg-[#18352b] p-4 text-xs leading-relaxed text-white/72 shadow-[0_18px_36px_-30px_rgba(0,0,0,0.75)]">
             <p className="font-display text-sm text-sprout">Prevent, don&apos;t just measure.</p>
             Predict a decision&apos;s footprint before you make it.
           </div>
@@ -114,7 +115,7 @@ export function Sidebar() {
         <Foliage />
       </aside>
 
-      <header data-app-header className="sticky top-0 z-40 flex items-center justify-between bg-forest px-4 py-3 md:hidden">
+      <header data-app-header className="sticky top-0 z-40 flex items-center justify-between bg-forest px-4 py-3 shadow-lg lg:hidden">
         <Link href="/" aria-label="CarbonShift home">
           <Logo />
         </Link>
@@ -129,8 +130,8 @@ export function Sidebar() {
       </header>
 
       {open && (
-        <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Menu">
-          <button className="absolute inset-0 bg-forest/60 backdrop-blur-sm" onClick={() => setOpen(false)} aria-label="Close menu" />
+        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
+          <button className="absolute inset-0 bg-forest/70" onClick={() => setOpen(false)} aria-label="Close menu" />
           <div key={path} className="animate-rise absolute inset-y-0 left-0 flex w-72 flex-col overflow-y-auto bg-forest pb-8 shadow-2xl">
             <div className="flex items-center justify-between px-5 py-4">
               <Logo />

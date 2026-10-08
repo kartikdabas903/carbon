@@ -18,7 +18,7 @@ export function Card({
     <section
       className={cn(
         // min-w-0 lets cards shrink inside grids instead of pushing the page wider than the screen
-        "min-w-0 rounded-3xl border border-line/80 bg-surface text-ink shadow-[0_1px_2px_rgba(15,42,31,0.04),0_12px_32px_-18px_rgba(15,42,31,0.18)] md:p-6",
+        "surface-panel min-w-0 rounded-2xl text-ink md:p-6",
         compact ? "p-3.5" : "p-5",
         className
       )}

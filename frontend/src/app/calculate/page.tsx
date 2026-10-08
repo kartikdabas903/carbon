@@ -34,7 +34,7 @@ export default function CalculatePage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <PageHeader eyebrow="Decide" icon="calc" title="Calculator" description="Know the exact activity and amount? Pick it here for an exact, sourced calculation." />
+      <PageHeader title="Calculator" description="Know the exact activity and amount? Pick it here for an exact, sourced calculation." />
       <Card>
         <CarbonInput onSubmit={submit} loading={loading} />
       </Card>

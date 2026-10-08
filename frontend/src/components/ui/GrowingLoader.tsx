@@ -10,7 +10,7 @@ export function GrowingLoader({ steps, interval = 1600 }: { steps: string[]; int
   }, [steps.length, interval]);
 
   return (
-    <div role="status" aria-live="polite" className="animate-rise flex items-center gap-4 rounded-3xl border border-line/80 bg-surface p-5">
+    <div role="status" aria-live="polite" className="surface-panel animate-rise flex items-center gap-4 rounded-2xl p-5">
       <svg viewBox="0 0 48 48" className="h-12 w-12 shrink-0" aria-hidden>
         <ellipse cx="24" cy="42" rx="14" ry="3" fill="#e3ddcd" />
         <g className="animate-grow" style={{ transformBox: "fill-box", transformOrigin: "bottom center" }}>

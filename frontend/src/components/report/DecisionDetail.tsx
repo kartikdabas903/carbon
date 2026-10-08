@@ -1,5 +1,5 @@
 import { BreakdownTable } from "@/components/ai/BreakdownTable";
-import { fmtDate, type HistoryEntry } from "@/lib/history";
+import { fmtDate, isPlanned, type HistoryEntry } from "@/lib/history";
 import { SCOPE_LABEL } from "@/lib/stats";
 import { fmtKg, fmtMoney, fmtPct } from "@/lib/utils";
 
@@ -37,7 +37,7 @@ export function DecisionDetail({ entry }: { entry: HistoryEntry }) {
                   .filter((s) => scopes[`scope${s}`] > 0)
                   .map((s) => [SCOPE_LABEL[s], fmtKg(scopes[`scope${s}`])])
               : []),
-            ["Your choice", entry.choice ? `${entry.choice.title} (${fmtKg(entry.choice.kg)})` : "Not chosen yet"],
+            ["Your choice", entry.choice ? `${entry.choice.title} (${fmtKg(entry.choice.kg)}) · ${isPlanned(entry.choice) ? "planned" : "done"}` : "Not chosen yet"],
           ].map(([k, v]) => (
             <tr key={k} className="border-t border-line">
               <td className="py-1.5 pr-4 text-ink/70">{k}</td>

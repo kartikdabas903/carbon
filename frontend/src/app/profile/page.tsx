@@ -54,7 +54,7 @@ export default function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <PageHeader eyebrow="Account" icon="history" title="Your profile" description="Your account, saved decisions, chosen changes, and carbon goal." />
+      <PageHeader title="Your profile" description="Your account, saved decisions, chosen changes, and carbon goal." />
 
       {!configured ? (
         <Card title="Cloud accounts unavailable">

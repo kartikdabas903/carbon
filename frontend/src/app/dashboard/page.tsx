@@ -7,6 +7,7 @@ import { BarChart, type BarRow } from "@/components/charts/BarChart";
 import { CumulativeChart } from "@/components/charts/CumulativeChart";
 import { StatTiles } from "@/components/dashboard/StatTiles";
 import { BudgetMeter } from "@/components/dashboard/BudgetMeter";
+import { FollowUps } from "@/components/dashboard/FollowUps";
 import { TargetPlanner } from "@/components/dashboard/TargetPlanner";
 import { Card } from "@/components/ui/Card";
 import { fmtDate, useHistory } from "@/lib/history";
@@ -34,7 +35,7 @@ export default function DashboardPage() {
   if (history.length === 0)
     return (
       <div className="space-y-6">
-        <PageHeader eyebrow="Track" icon="chart" title="Dashboard" description="Everything you've predicted and chosen, and how much you could still shift." />
+        <PageHeader title="Dashboard" description="Everything you've predicted and chosen, and how much you could still shift." />
         <Card>
           <p className="text-sm">
             Your dashboard fills in as you analyse decisions.{" "}
@@ -67,18 +68,17 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Track"
-        icon="chart"
         title="Dashboard"
         description="Everything you've predicted and chosen, and how much you could still shift."
         actions={
-          <Link href="/report" className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-moss hover:bg-sage/60">
+          <Link href="/report" className="inline-flex items-center gap-2 rounded-2xl border border-line bg-surface-strong px-4 py-2 text-sm font-semibold text-moss hover:bg-sage/60">
             Export report (PDF)
           </Link>
         }
       />
       <HistoryFilters value={filter} onChange={setFilter} shown={shown.length} total={history.length} />
       <StatTiles summary={s} />
+      <FollowUps history={history} />
       <BudgetMeter history={history} />
 
       <Card title="Cumulative emissions: as planned vs with recommendations">
@@ -87,10 +87,10 @@ export default function DashboardPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card title="By category">
-          <BarChart rows={categoryRows} legend={AVOIDABLE_LEGEND} />
+          <BarChart rows={categoryRows} legend={AVOIDABLE_LEGEND} showShare />
         </Card>
         <Card title="By GHG Protocol scope">
-          <BarChart rows={scopeRows} />
+          <BarChart rows={scopeRows} showShare />
           {s.unscopedKg > 0 && (
             <p className="mt-3 text-xs text-ink/50">{fmtKg(s.unscopedKg)} from older entries has no scope breakdown.</p>
           )}
@@ -105,7 +105,7 @@ export default function DashboardPage() {
         <TargetPlanner history={shown} />
       </div>
 
-      <details className="rounded-3xl border border-line/80 bg-surface p-5 text-sm">
+      <details className="surface-panel rounded-2xl p-5 text-sm">
         <summary className="cursor-pointer font-semibold text-ink/70">Data table</summary>
         <div className="mt-3 overflow-x-auto">
           <table className="w-full min-w-[560px] text-left">

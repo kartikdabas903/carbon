@@ -16,7 +16,7 @@ export default function GhostPage() {
   if (history.length === 0)
     return (
       <div className="space-y-6">
-        <PageHeader eyebrow="Plan" icon="ghost" title="Ghost You" description="Ghost You lives the same life but takes the best recommendation every time. Every choice you make closes the gap." />
+        <PageHeader title="Ghost You" description="Ghost You lives the same life but takes the best recommendation every time. Every choice you make closes the gap." />
         <Card>
           <p className="text-sm">
             Ghost You is the version of you who takes every best recommendation.{" "}
@@ -31,7 +31,7 @@ export default function GhostPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="Plan" icon="ghost" title="Ghost You" description="Ghost You lives the same life but takes the best recommendation every time. Every choice you make closes the gap." />
+      <PageHeader title="Ghost You" description="Ghost You lives the same life but takes the best recommendation every time. Every choice you make closes the gap." />
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>

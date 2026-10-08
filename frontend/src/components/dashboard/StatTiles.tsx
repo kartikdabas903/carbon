@@ -15,7 +15,9 @@ export function StatTiles({ summary: s }: { summary: Summary }) {
       label: "Actually avoided",
       value: s.avoidedKg,
       format: fmtKg,
-      note: s.choices ? `from ${s.choices} choice${s.choices === 1 ? "" : "s"} you made` : "mark what you chose to track this",
+      note:
+        (s.choices ? `from ${s.choices} confirmed change${s.choices === 1 ? "" : "s"}` : "confirm a change to track this") +
+        (s.planned ? ` · ${fmtKg(s.plannedKg)} planned` : ""),
       icon: "shield",
       accent: true,
     },

@@ -1,4 +1,4 @@
-import { EFFORT_WEIGHT, type HistoryEntry } from "@/lib/history";
+import { avoidedKg, choiceSavingKg, EFFORT_WEIGHT, isDone, isPlanned, type HistoryEntry } from "@/lib/history";
 import type { AIRecommendation } from "@/types/ai";
 import type { ActivityCategory } from "@/types/carbon";
 
@@ -23,8 +23,10 @@ export interface Summary {
   count: number;
   totalKg: number;
   avoidableKg: number;
-  avoidedKg: number; // real savings from choices the user made
-  choices: number;
+  avoidedKg: number; // real savings from changes the user says they made
+  choices: number; // decisions marked done
+  plannedKg: number; // savings from changes still planned
+  planned: number;
   byCategory: CategoryTotal[];
   scopes: { scope: 1 | 2 | 3; kg: number }[];
   unscopedKg: number;
@@ -62,13 +64,16 @@ export function summarize(history: HistoryEntry[]): Summary {
     cumulative.push({ at: e.createdAt, label: e.request.prompt, plannedKg: planned, withRecsKg: withRecs });
   }
 
-  const chosen = history.filter((e) => e.choice);
+  const done = history.filter((e) => isDone(e.choice));
+  const pending = history.filter((e) => isPlanned(e.choice));
   return {
     count: history.length,
     totalKg: planned,
     avoidableKg: planned - withRecs,
-    avoidedKg: chosen.reduce((s, e) => s + Math.max(0, e.prediction.predictedKg - (e.choice?.kg ?? 0)), 0),
-    choices: chosen.length,
+    avoidedKg: done.reduce((s, e) => s + avoidedKg(e), 0),
+    choices: done.length,
+    plannedKg: pending.reduce((s, e) => s + choiceSavingKg(e), 0),
+    planned: pending.length,
     byCategory: [...byCategory.values()].sort((a, b) => b.kg - a.kg),
     scopes: ([1, 2, 3] as const).map((s) => ({ scope: s, kg: scopeKg[s] })),
     unscopedKg,

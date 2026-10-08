@@ -1,54 +1,111 @@
 "use client";
 import {
+  Area,
   CartesianGrid,
+  ComposedChart,
   Line,
-  LineChart as RechartsLineChart,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
 import { ChartContainer, chartTickStyle, chartTooltipStyle } from "@/components/charts/ChartContainer";
-import { fmtTick } from "@/components/charts/axis";
+import { endLabel, fmtTick, niceTicks, timeTicks } from "@/components/charts/axis";
 import { fmtKg } from "@/lib/utils";
 import type { CumulativePoint } from "@/lib/stats";
 
-const shortDate =(iso: string) =>
-  new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+const shortDate = (t: number) => new Date(t).toLocaleDateString(undefined, { day: "numeric", month: "short" });
 
-/** Running total of emissions across decisions: as planned vs with the best change each time. */
+/**
+ * Running total of emissions across decisions: as planned vs with the best change each time.
+ * Step lines, because emissions arrive when a decision is made, not gradually in between.
+ */
 export function CumulativeChart({ points }: { points: CumulativePoint[] }) {
   if (points.length === 0) return <p className="text-sm text-ink/60">No decisions to chart.</p>;
 
+  const first = new Date(points[0].at).getTime();
   const data = [
-    { at: points[0].at, label: "Start", plannedKg: 0, withRecsKg: 0 },
-    ...points.map((point) => ({ ...point, label: shortDate(point.at) })),
+    // Start from zero a day before the first decision so the first step is visible
+    { t: first - 86400e3, label: "Start", plannedKg: 0, withRecsKg: 0, gap: [0, 0] as [number, number] },
+    ...points.map((p) => ({
+      t: new Date(p.at).getTime(),
+      label: p.label,
+      plannedKg: p.plannedKg,
+      withRecsKg: p.withRecsKg,
+      gap: [p.withRecsKg, p.plannedKg] as [number, number],
+    })),
   ];
   const last = data[data.length - 1];
+  const yTicks = niceTicks(last.plannedKg);
+  const lastIndex = data.length - 1;
 
   return (
-    <div>
+    <div className="min-w-0">
       <ul className="mb-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink/70">
         <li className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded bg-[var(--chart-planned)]" />As planned</li>
         <li className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded bg-[var(--chart-reduced)]" />With best recommendations</li>
+        <li className="flex items-center gap-1.5"><span className="h-2.5 w-4 rounded-sm bg-[var(--chart-planned)] opacity-15" />Avoidable</li>
       </ul>
       <ChartContainer
         label={`Cumulative emissions: ${fmtKg(last.plannedKg)} as planned, ${fmtKg(last.withRecsKg)} with recommendations`}
         height={300}
       >
-        <RechartsLineChart data={data} margin={{ top: 10, right: 16, bottom: 4, left: 4 }}>
+        <ComposedChart data={data} margin={{ top: 12, right: 72, bottom: 4, left: 4 }}>
           <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
-          <XAxis dataKey="label" tick={chartTickStyle} tickLine={false} axisLine={false} minTickGap={24} />
-          <YAxis width={66} tickFormatter={(value) => fmtTick(Number(value))} tick={chartTickStyle} tickLine={false} axisLine={false} />
+          <XAxis
+            dataKey="t"
+            type="number"
+            scale="time"
+            domain={["dataMin", "dataMax"]}
+            ticks={timeTicks(data[0].t, last.t)}
+            tickFormatter={(v) => shortDate(Number(v))}
+            tick={chartTickStyle}
+            tickLine={false}
+            axisLine={false}
+          />
+          <YAxis
+            ticks={yTicks}
+            domain={[0, yTicks[yTicks.length - 1]]}
+            width={56}
+            tickFormatter={(v) => fmtTick(Number(v))}
+            tick={chartTickStyle}
+            tickLine={false}
+            axisLine={false}
+          />
           <Tooltip
             contentStyle={chartTooltipStyle}
             labelStyle={{ color: "var(--ink)", fontWeight: 600 }}
-            formatter={(value, name) => [fmtKg(Number(value)), String(name)]}
+            labelFormatter={(_v, payload) => {
+              const p = payload?.[0]?.payload as (typeof data)[number] | undefined;
+              return p ? `${shortDate(p.t)} · ${p.label}` : "";
+            }}
+            formatter={(value, name) => (name === "Avoidable" ? null : [fmtKg(Number(value)), String(name)])}
           />
-          <Line dataKey="plannedKg" name="As planned" type="monotone" stroke="var(--chart-planned)" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
-          <Line dataKey="withRecsKg" name="With best recommendations" type="monotone" stroke="var(--chart-reduced)" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
-        </RechartsLineChart>
+          <Area dataKey="gap" name="Avoidable" type="stepAfter" stroke="none" fill="var(--chart-planned)" fillOpacity={0.12} isAnimationActive={false} />
+          <Line
+            dataKey="plannedKg"
+            name="As planned"
+            type="stepAfter"
+            stroke="var(--chart-planned)"
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 5, stroke: "var(--surface)", strokeWidth: 2 }}
+            label={endLabel(lastIndex, fmtKg, -8)}
+          />
+          <Line
+            dataKey="withRecsKg"
+            name="With best recommendations"
+            type="stepAfter"
+            stroke="var(--chart-reduced)"
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 5, stroke: "var(--surface)", strokeWidth: 2 }}
+            label={endLabel(lastIndex, fmtKg, 12)}
+          />
+        </ComposedChart>
       </ChartContainer>
-      <p className="mt-2 text-xs text-ink/50">{points.length} decision{points.length === 1 ? "" : "s"} · through {shortDate(last.at)}</p>
+      <p className="mt-2 text-xs text-ink/50">
+        {points.length} decision{points.length === 1 ? "" : "s"} · each step is one decision · hover for details
+      </p>
     </div>
   );
 }

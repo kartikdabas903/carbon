@@ -43,7 +43,7 @@ export default function RecommendationsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="Track" icon="bulb" title="Recommendations" description="The best changes from all your decisions, ranked by CO₂ saved and how easy they are." />
+      <PageHeader title="Recommendations" description="The best changes from all your decisions, ranked by CO₂ saved and how easy they are." />
       {all.length === 0 ? (
         <p className="text-sm">
           No recommendations yet. <Link href="/ai" className="text-moss underline">Run a prediction</Link> and the best

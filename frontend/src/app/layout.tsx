@@ -2,7 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
-import { Sidebar } from "@/components/ui/Sidebar";
+import { AppFrame } from "@/components/ui/AppFrame";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 
@@ -24,12 +24,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <AuthProvider>
           <RequireAuth>
-            <div className="min-h-screen md:flex">
-              <Sidebar />
-              <main className="min-w-0 flex-1 px-4 pb-16 pt-6 md:px-10 md:pt-10">
-                <div className="mx-auto max-w-6xl">{children}</div>
-              </main>
-            </div>
+            <AppFrame>{children}</AppFrame>
           </RequireAuth>
         </AuthProvider>
       </body>

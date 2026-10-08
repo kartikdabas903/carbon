@@ -1,4 +1,4 @@
-import type { HistoryEntry } from "@/lib/history";
+import { avoidedKg, isDone, isPlanned, PLAN_TITLE, type HistoryEntry } from "@/lib/history";
 import { bestSaving } from "@/lib/stats";
 import type { ActivityCategory } from "@/types/carbon";
 
@@ -20,7 +20,7 @@ export interface HistoryFilter {
   scope: "all" | "1" | "2" | "3";
   period: "all" | "today" | "7d" | "30d" | "month";
   size: "all" | "small" | "medium" | "large" | "huge";
-  choice: "all" | "chosen" | "open";
+  choice: "all" | "done" | "planned" | "kept" | "open";
   sort: SortKey;
 }
 
@@ -61,6 +61,13 @@ export const PERIOD_LABELS: Record<Exclude<HistoryFilter["period"], "all">, stri
   month: "This month",
 };
 
+export const CHOICE_LABELS: Record<Exclude<HistoryFilter["choice"], "all">, string> = {
+  done: "Greener option done",
+  planned: "Planned, not confirmed",
+  kept: "Kept the original plan",
+  open: "Not answered yet",
+};
+
 const DAY = 24 * 3600 * 1000;
 
 function inPeriod(iso: string, period: HistoryFilter["period"], now: Date) {
@@ -94,7 +101,7 @@ function inSize(kg: number, size: HistoryFilter["size"]) {
   }
 }
 
-const avoided = (e: HistoryEntry) => (e.choice ? Math.max(0, e.prediction.predictedKg - e.choice.kg) : 0);
+const avoided = avoidedKg;
 
 const SORTERS: Record<SortKey, (a: HistoryEntry, b: HistoryEntry) => number> = {
   newest: (a, b) => b.createdAt.localeCompare(a.createdAt),
@@ -121,7 +128,9 @@ export function applyFilter(history: HistoryEntry[], f: HistoryFilter, now = new
       if (f.scope !== "all" && !(p.scopes && p.scopes[`scope${f.scope}`] > 0)) return false;
       if (!inPeriod(e.createdAt, f.period, now)) return false;
       if (!inSize(p.predictedKg, f.size)) return false;
-      if (f.choice === "chosen" && !e.choice) return false;
+      if (f.choice === "done" && !(isDone(e.choice) && e.choice!.title !== PLAN_TITLE)) return false;
+      if (f.choice === "planned" && !isPlanned(e.choice)) return false;
+      if (f.choice === "kept" && e.choice?.title !== PLAN_TITLE) return false;
       if (f.choice === "open" && (e.choice || e.kind === "calculation" || p.recommendations.length === 0)) return false;
       return true;
     })
@@ -140,7 +149,7 @@ export function describeFilter(f: HistoryFilter): string {
   if (f.scope !== "all") parts.push(`with Scope ${f.scope} emissions`);
   if (f.period !== "all") parts.push(PERIOD_LABELS[f.period].toLowerCase());
   if (f.size !== "all") parts.push(SIZE_LABELS[f.size].toLowerCase());
-  if (f.choice !== "all") parts.push(f.choice === "chosen" ? "with a choice made" : "awaiting a choice");
+  if (f.choice !== "all") parts.push(CHOICE_LABELS[f.choice].toLowerCase());
   return parts.join(" · ");
 }
 

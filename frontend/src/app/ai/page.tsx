@@ -153,8 +153,6 @@ function Predict() {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Decide"
-        icon="sparkle"
         title="Predict a decision"
         description="Describe what you're planning. We'll predict its footprint, show the lower-carbon options and tell you what's worth changing."
       />

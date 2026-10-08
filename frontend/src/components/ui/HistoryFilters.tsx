@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import {
+  CHOICE_LABELS,
   DEFAULT_FILTER,
   isFiltered,
   PERIOD_LABELS,
@@ -45,7 +46,7 @@ export function HistoryFilters({
   ).length;
 
   return (
-    <div className="rounded-3xl border border-line/80 bg-surface p-4 print:hidden">
+    <div className="surface-panel rounded-2xl p-4 print:hidden">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Field label="Search">
           <input aria-label="Search"
@@ -106,8 +107,9 @@ export function HistoryFilters({
           <Field label="Your choice">
             <select aria-label="Your choice" value={value.choice} onChange={(e) => set("choice", e.target.value as HistoryFilter["choice"])} className={selectClass}>
               <option value="all">Any</option>
-              <option value="chosen">Choice made</option>
-              <option value="open">Still to choose</option>
+              {(Object.keys(CHOICE_LABELS) as (keyof typeof CHOICE_LABELS)[]).map((c) => (
+                <option key={c} value={c}>{CHOICE_LABELS[c]}</option>
+              ))}
             </select>
           </Field>
         </div>
@@ -119,7 +121,7 @@ export function HistoryFilters({
         <button
           onClick={() => setMore(!more)}
           aria-expanded={more}
-          className="rounded-full border border-line bg-surface px-3 py-1 font-medium text-moss sm:hidden"
+          className="rounded-xl border border-line bg-surface-strong px-3 py-1 font-medium text-moss sm:hidden"
         >
           {more ? "Fewer filters" : `More filters${extraActive ? ` (${extraActive} on)` : ""}`}
         </button>

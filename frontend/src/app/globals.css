@@ -1,22 +1,25 @@
 @import "tailwindcss";
 
-/* CarbonShift: a nature palette. Forest greens for structure, fresh leaf for
-   highlights, earthy clay for emissions, warm parchment instead of stark white. */
 :root {
   color-scheme: light;
-  --ink: #14261c;
-  --paper: #f3efe4; /* page: warm parchment */
-  --surface: #fffdf7; /* cards */
-  --line: #e3ddcd;
-  --forest: #0f2a1f;
-  --moss: #1f6b4a;
-  --fern: #2f8f5b;
-  --sage: #e4ece0;
-  --mist: #dcebe5;
-  --sprout: #c8e88a; /* fresh-leaf highlight */
-  --lime: #c8e88a; /* kept for existing classes */
-  --clay: #c4622d; /* emissions / your plan */
-  --sun: #e8b84a;
+  --ink: #16231e;
+  --paper: #eef2ed;
+  --surface: #fffefa;
+  --surface-strong: #ffffff;
+  --line: #d7dfd6;
+  --forest: #10261f;
+  --moss: #26634d;
+  --fern: #16845d;
+  --sage: #dfe9df;
+  --mist: #d9e8e3;
+  --sprout: #b9e66d;
+  --lime: #b9e66d;
+  --clay: #c85d32;
+  --sun: #e7b94d;
+  --sky: #5b91a5;
+  --violet: #5b5f87;
+  --shadow-soft: 0 18px 50px -34px rgba(16, 38, 31, 0.55);
+  --shadow-card: 0 1px 1px rgba(16, 38, 31, 0.04), 0 18px 44px -30px rgba(16, 38, 31, 0.42);
   /* Chart series: validated for colour-blind separation on light surfaces (dataviz validator) */
   --chart-planned: #c4622d;
   --chart-reduced: #0f8a6a;
@@ -28,6 +31,7 @@
   --color-ink: var(--ink);
   --color-paper: var(--paper);
   --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
   --color-line: var(--line);
   --color-forest: var(--forest);
   --color-moss: var(--moss);
@@ -38,6 +42,8 @@
   --color-lime: var(--lime);
   --color-clay: var(--clay);
   --color-sun: var(--sun);
+  --color-sky: var(--sky);
+  --color-violet: var(--violet);
   --color-chart-planned: var(--chart-planned);
   --color-chart-reduced: var(--chart-reduced);
   --color-chart-single: var(--chart-single);
@@ -52,14 +58,21 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+  min-height: 100%;
 }
 
-/* A faint paper grain so the background feels natural, not flat */
 body {
   background-image:
-    radial-gradient(circle at 12% 8%, rgba(200, 232, 138, 0.18), transparent 42%),
-    radial-gradient(circle at 92% 0%, rgba(47, 143, 91, 0.08), transparent 38%);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0) 32%),
+    radial-gradient(circle at 12% 8%, rgba(185, 230, 109, 0.16), transparent 34%),
+    radial-gradient(circle at 84% 12%, rgba(91, 145, 165, 0.13), transparent 32%),
+    radial-gradient(circle at 86% 92%, rgba(200, 93, 50, 0.08), transparent 30%);
   background-attachment: fixed;
+}
+
+::selection {
+  background: var(--sprout);
+  color: var(--forest);
 }
 
 h1,
@@ -72,12 +85,13 @@ h3 {
 @layer components {
   .field {
     width: 100%;
-    border-radius: 0.875rem;
+    border-radius: 1rem;
     border: 1px solid var(--line);
-    background: var(--surface);
+    background: var(--surface-strong);
     padding: 0.6rem 0.9rem;
     color: var(--ink);
-    transition: border-color 0.15s, box-shadow 0.15s;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
   }
   .field:hover {
     border-color: #cfc7b2;
@@ -85,7 +99,7 @@ h3 {
   .field:focus {
     outline: none;
     border-color: var(--fern);
-    box-shadow: 0 0 0 4px rgba(47, 143, 91, 0.14);
+    box-shadow: 0 0 0 4px rgba(22, 132, 93, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
   .field::placeholder {
     color: rgba(20, 38, 28, 0.42);
@@ -110,6 +124,26 @@ h3 {
   }
   50% {
     transform: translate(10px, -16px) rotate(14deg);
+  }
+}
+@keyframes float-3d {
+  0%,
+  100% {
+    transform: rotateX(56deg) rotateZ(-34deg) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: rotateX(58deg) rotateZ(-30deg) translate3d(8px, -8px, 18px);
+  }
+}
+@keyframes pulse-ring {
+  0%,
+  100% {
+    transform: scale(0.94);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.9;
   }
 }
 @keyframes sway {
@@ -139,6 +173,18 @@ h3 {
     transform: scale(1) rotate(0);
   }
 }
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.animate-grow-x {
+  animation: grow-x 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  transform-origin: left center;
+}
 @keyframes shimmer {
   from {
     background-position: -200% 0;
@@ -153,6 +199,10 @@ h3 {
 }
 .animate-drift {
   animation: drift 9s ease-in-out infinite;
+}
+.animate-float-3d {
+  animation: float-3d 8s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+  transform-style: preserve-3d;
 }
 .animate-sway {
   animation: sway 3.2s ease-in-out infinite;
@@ -181,6 +231,95 @@ h3 {
 .stagger > *:nth-child(5) { animation-delay: 0.2s; }
 .stagger > *:nth-child(6) { animation-delay: 0.25s; }
 .stagger > *:nth-child(n + 7) { animation-delay: 0.3s; }
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.content-shell {
+  width: min(100%, 1240px);
+  margin-inline: auto;
+}
+
+.surface-panel {
+  border: 1px solid rgba(215, 223, 214, 0.92);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+.interactive-lift {
+  transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.24s ease, border-color 0.24s ease, background-color 0.24s ease;
+}
+
+.interactive-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 54px -32px rgba(16, 38, 31, 0.52);
+}
+
+.carbon-3d-scene {
+  perspective: 1100px;
+  perspective-origin: 50% 38%;
+}
+
+.carbon-cube {
+  position: relative;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 26px 34px rgba(6, 21, 17, 0.24));
+}
+
+.carbon-cube > span {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+}
+
+.carbon-cube .front {
+  transform: translateZ(44px);
+  background: linear-gradient(145deg, #b9e66d, #16845d 66%, #10261f);
+}
+
+.carbon-cube .back {
+  transform: rotateY(180deg) translateZ(44px);
+  background: #143126;
+}
+
+.carbon-cube .right {
+  transform: rotateY(90deg) translateZ(44px);
+  background: linear-gradient(180deg, #5b91a5, #26634d);
+}
+
+.carbon-cube .left {
+  transform: rotateY(-90deg) translateZ(44px);
+  background: linear-gradient(180deg, #e7b94d, #c85d32);
+}
+
+.carbon-cube .top {
+  transform: rotateX(90deg) translateZ(44px);
+  background: linear-gradient(135deg, #ffffff, #dfe9df);
+}
+
+.carbon-cube .bottom {
+  transform: rotateX(-90deg) translateZ(44px);
+  background: #0b1b16;
+}
+
+.metric-riser {
+  transform-style: preserve-3d;
+}
+
+.metric-riser::after {
+  content: "";
+  position: absolute;
+  inset: auto 10% -9px 10%;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(16, 38, 31, 0.18);
+  filter: blur(7px);
+}
+
+.pulse-ring {
+  animation: pulse-ring 3.8s ease-in-out infinite;
+}
 
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -216,4 +355,10 @@ h3 {
   main {
     padding: 0 !important;
   }
+}
+
+/* Edge/IE add their own reveal and clear buttons; password fields have ours */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
 }

@@ -5,7 +5,7 @@ import { Suspense, useEffect, useState } from "react";
 import { DecisionDetail } from "@/components/report/DecisionDetail";
 import { HistoryFilters } from "@/components/ui/HistoryFilters";
 import { applyFilter, DEFAULT_FILTER, describeFilter, type HistoryFilter } from "@/lib/filters";
-import { committedKg, fmtDate, useHistory, type HistoryEntry } from "@/lib/history";
+import { committedKg, fmtDate, isPlanned, useHistory, type HistoryEntry } from "@/lib/history";
 import { bestSaving, SCOPE_LABEL, summarize } from "@/lib/stats";
 import { cn, fmtKg } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -80,8 +80,6 @@ function Report() {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Plan"
-        icon="doc"
         title="Report"
         description="Print all your decisions together, a selection, or one at a time. Save as PDF from the print dialog."
         actions={single && (
@@ -198,7 +196,8 @@ function ReportDocument({
                 {[
                   ["Predicted emissions (as planned)", fmtKg(s.totalKg)],
                   ["Committed emissions (after your choices)", fmtKg(committed)],
-                  ["Avoided through choices made", `${fmtKg(s.avoidedKg)} (${s.choices} choice${s.choices === 1 ? "" : "s"})`],
+                  ["Avoided through confirmed changes", `${fmtKg(s.avoidedKg)} (${s.choices} change${s.choices === 1 ? "" : "s"})`],
+                  ["Planned, not yet confirmed", `${fmtKg(s.plannedKg)} (${s.planned})`],
                   ["Further avoidable (best change each)", fmtKg(Math.max(0, s.avoidableKg - s.avoidedKg))],
                 ].map(([k, v]) => (
                   <tr key={k} className="border-t border-line">
@@ -280,7 +279,7 @@ function ReportDocument({
                       <td className="py-1.5 pr-3 whitespace-nowrap">{fmtDate(e.createdAt)}</td>
                       <td className="py-1.5 pr-3">{e.request.prompt}</td>
                       <td className="py-1.5 pr-3 text-right whitespace-nowrap">{fmtKg(e.prediction.predictedKg)}</td>
-                      <td className="py-1.5 pr-3">{e.choice ? `${e.choice.title} (${fmtKg(e.choice.kg)})` : "—"}</td>
+                      <td className="py-1.5 pr-3">{e.choice ? `${e.choice.title} (${fmtKg(e.choice.kg)})${isPlanned(e.choice) ? " · planned" : ""}` : "—"}</td>
                       <td className="py-1.5 text-right whitespace-nowrap">{fmtKg(bestSaving(e))}</td>
                       {selection && (
                         <td className="py-1.5 pl-3 text-right print:hidden">

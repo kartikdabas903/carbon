@@ -13,13 +13,67 @@ export interface HistoryEntry {
 }
 
 export interface Choice {
-  title: string; // "Your plan" or a recommendation title
-  kg: number;
+  title: string; // "Your plan", a recommendation title, or several joined with " + "
+  kg: number; // emissions after the change(s)
   recommendationId?: string;
+  recommendationIds?: string[]; // every change taken; several when they stack (e.g. two material swaps)
+  status?: "planned" | "done"; // missing on choices saved before follow-up tracking: counted as done
+  doneAt?: string;
+  updatedAt?: string;
 }
+
+export const PLAN_TITLE = "Your plan";
 
 /** Emissions the user is committed to: their choice if made, else the prediction. */
 export const committedKg = (e: HistoryEntry) => e.choice?.kg ?? e.prediction.predictedKg;
+
+export const isDone = (c?: Choice) => !!c && c.status !== "planned";
+export const isPlanned = (c?: Choice) => c?.status === "planned";
+
+/** CO₂ the choice removes from the prediction, whether done or still planned. */
+export const choiceSavingKg = (e: HistoryEntry) => (e.choice ? Math.max(0, e.prediction.predictedKg - e.choice.kg) : 0);
+
+/** Only changes the user says they actually made count as avoided. */
+export const avoidedKg = (e: HistoryEntry) => (isDone(e.choice) ? choiceSavingKg(e) : 0);
+
+/**
+ * Trips offer either/or alternatives; other decisions' changes can stack (fly-ash cement and AAC
+ * blocks in one build). Stacked savings combine multiplicatively so the total never passes 100%:
+ * cutting 40% then 30% of what's left is 58%, not 70%.
+ */
+export const isExclusive = (e: HistoryEntry) => {
+  const recs = e.prediction.recommendations;
+  // Trips and travel-mode swaps are alternatives: you take the train or the coach, not both
+  return !!e.prediction.tripOptions?.length || recs.length < 2 || recs.every((r) => r.category === "transport");
+};
+
+export function choiceFor(e: HistoryEntry, recIds: string[], status: Choice["status"] = "planned"): Choice {
+  const p = e.prediction;
+  const now = new Date().toISOString();
+  const recs = p.recommendations.filter((r) => recIds.includes(r.id));
+  if (recs.length === 0) return { title: PLAN_TITLE, kg: p.predictedKg, status, updatedAt: now, ...(status === "done" ? { doneAt: now } : {}) };
+  const base = p.predictedKg || 1;
+  const remaining = recs.reduce((left, r) => left * (1 - Math.min(1, Math.max(0, r.savingsKg) / base)), 1);
+  return {
+    title: recs.map((r) => r.title).join(" + "),
+    kg: Math.max(0, p.predictedKg * remaining),
+    recommendationId: recs[0].id,
+    recommendationIds: recs.map((r) => r.id),
+    status,
+    updatedAt: now,
+    ...(status === "done" ? { doneAt: now } : {}),
+  };
+}
+
+/** Recommendation ids in a saved choice, including ones saved before multi-select by title. */
+export function chosenIds(e: HistoryEntry): string[] {
+  const c = e.choice;
+  if (!c || c.title === PLAN_TITLE) return [];
+  if (c.recommendationIds?.length) return c.recommendationIds;
+  if (c.recommendationId) return [c.recommendationId];
+  const byTitle = e.prediction.recommendations.find((r) => r.title === c.title);
+  return byTitle ? [byTitle.id] : [];
+}
 
 const MAX_ENTRIES = 50;
 let activeUserId: string | null = null;

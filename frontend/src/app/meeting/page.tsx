@@ -117,8 +117,6 @@ export default function MeetingPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Decide together"
-        icon="pin"
         title="Meeting point"
         description="Where should a group meet? We compare venues by everyone's real journeys (each group's most viable way to travel) plus hotel nights."
       />
@@ -202,7 +200,24 @@ export default function MeetingPage() {
         </Card>
 
         <div className="space-y-4">
-          {!result && <p className="text-sm text-ink/60">Results will appear here.</p>}
+          {!result && (
+            <Card>
+              <div className="grid gap-4 sm:grid-cols-[1fr_0.8fr] sm:items-center">
+                <div>
+                  <p className="text-sm font-semibold text-forest">Venue comparison preview</p>
+                  <p className="mt-2 text-sm leading-relaxed text-ink/65">
+                    Add attendee cities and run the comparison. The route map, venue emissions and group travel details will arrange
+                    themselves here as soon as results are ready.
+                  </p>
+                </div>
+                <div className="grid grid-cols-3 items-end gap-2 rounded-2xl bg-sage/70 p-4">
+                  {[68, 42, 55].map((h, i) => (
+                    <span key={h} className={`rounded-t-xl ${i === 1 ? "bg-fern" : "bg-mist"}`} style={{ height: `${h}px` }} />
+                  ))}
+                </div>
+              </div>
+            </Card>
+          )}
           {result && best && (
             <>
               <Card>
